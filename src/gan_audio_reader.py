@@ -34,23 +34,9 @@ class GanAudioReader(object):
 
   def next_audio_batch(self):
     audio_tensor = self.dequeue()
-    # print(audio_tensor)
-
     audio_tensor = tf.reshape(audio_tensor, [-1])
-
     audio_tensor = self._encode(audio_tensor)
-    # print(audio_tensor)
-
-#    audio_tensor = tf.reshape(audio_tensor, [self.args.batch_size, -1])
-#    # print(audio_tensor)
-#
-#    audio_tensor = tf.slice(audio_tensor, [0, 0], [-1, self.args.samples])
-#    # print(audio_tensor)
-
-    samples = self.sess.run(audio_tensor)
-    # print(samples)
-
-    return samples
+    return self.sess.run(audio_tensor)
 
 
   def dequeue(self):
@@ -59,7 +45,7 @@ class GanAudioReader(object):
 
   def _one_hot(self, input_batch):
     '''One-hot encodes the waveform amplitudes.
-  
+
     This allows the definition of the network as a categorical distribution
     over a finite set of possible amplitudes.
     '''
@@ -81,17 +67,6 @@ class GanAudioReader(object):
       encoded_input = mu_law_encode(input_batch,
         self.args.quantization_channels)
       return tf.to_float(encoded_input) / self.args.quantization_channels
-      #return encoded_input
-
-#      # gc_embedding = self._embed_gc(global_condition_batch)
-#      encoded = self._one_hot(encoded_input)
-#      # if self.scalar_input:
-#      #   network_input = tf.reshape(
-#      #     tf.cast(input_batch, tf.float32),
-#      #     [self.batch_size, -1, 1])
-#      # else:
-#      #   network_input = encoded
-#      return encoded
 
 
   def done(self):
